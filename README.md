@@ -1,1 +1,1 @@
-# check-bmc
+需linux系统安装ipmitool
