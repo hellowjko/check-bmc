@@ -205,13 +205,13 @@ adminpasswd=${id2_pass}
 # 删除会话指令
 # 华为删除会话指令
 session1(){
-curl -k -H "X-Auth-Token: ${token}" -X DELETE https://${ip}/redfish/v1/SessionService/Sessions/${session_id} > /dev/null
+curl -k -w %{http_code} -H "X-Auth-Token: ${token}" -X DELETE https://${ip}/redfish/v1/SessionService/Sessions/${session_id} > /dev/null
 rm -rf headers.txt
 rm -rf tmp_headers.txt
 }
 # 华三删除会话指令
 session2(){
-curl -k -H "Content-Type: application/json" -H "X-Auth-Token: ${token}" -X DELETE https://${ip}/redfish/v1/SessionService/Sessions/${session_id} > /dev/null
+curl -k -w %{http_code} -H "Content-Type: application/json" -H "X-Auth-Token: ${token}" -X DELETE https://${ip}/redfish/v1/SessionService/Sessions/${session_id} > /dev/null
 rm -rf headers.txt
 rm -rf tmp_headers.txt
 }
@@ -278,72 +278,72 @@ esac
 }
 #################ntp#################
 huawei_ntp(){
-curl -k -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/NtpService > ${mydir}/ntp.txt
+curl -k -w %{http_code} -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/NtpService > ${mydir}/ntp.txt
 sed -i 's/,/\n/g' ${mydir}/ntp.txt
 tr -d "\r" < ${mydir}/ntp.txt > ${mydir}/tmp_ntp.txt
 ntp1=$(cat ${mydir}/tmp_ntp.txt | grep "PreferredNtpServer" | sed 's/"//g' | awk -F: '{print $2}')
 ntp2=$(cat ${mydir}/tmp_ntp.txt | grep "AlternateNtpServer" | sed 's/"//g' | awk -F: '{print $2}')
 }
 h3c_ntp(){
-curl -k -H "Content-Type: application/json" -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/NtpService > ${mydir}/ntp.txt
+curl -k -w %{http_code} -H "Content-Type: application/json" -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/NtpService > ${mydir}/ntp.txt
 sed -i 's/,/\n/g' ${mydir}/ntp.txt
 ntp1=$(cat ${mydir}/ntp.txt | grep "PreferredNtpServer" | sed 's/"//g' | awk -F: '{print $2}')
 ntp2=$(cat ${mydir}/ntp.txt | grep "AlternateNtpServer" | sed 's/"//g' | awk -F: '{print $2}')
 }
 ##############snmp#############
 huawei_snmptrap(){
-curl -k -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/SnmpService > ${mydir}/snmptrap.txt
+curl -k -w %{http_code} -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/SnmpService > ${mydir}/snmptrap.txt
 sed -i 's/,/\n/g' ${mydir}/snmptrap.txt
 snmptrap1=$(cat ${mydir}/snmptrap.txt | grep -A32 "TrapServer" | sed 's/"//g' | grep -A5 "MemberId:0" | gerp "TrapServerAddress" | awk -F: '{print $1}')
 snmptrap2=$(cat ${mydir}/snmptrap.txt | grep -A32 "TrapServer" | sed 's/"//g' | grep -A5 "MemberId:1" | gerp "TrapServerAddress" | awk -F: '{print $1}')
 }
 h3c_snmptrap(){
-curl -k -H "Content-Type: application/json" -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/SnmpService > ${mydir}/snmptrap.txt
+curl -k -w %{http_code} -H "Content-Type: application/json" -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/SnmpService > ${mydir}/snmptrap.txt
 sed -i 's/,/\n/g' ${mydir}/snmptrap.txt
 snmptrap1=$(cat ${mydir}/snmptrap.txt | grep -A12 "TrapServer" | sed 's/"//g' | grep -A1 "MemberId:1" | gerp "TrapServerAddress" | awk -F: '{print $1}')
 snmptrap2=$(cat ${mydir}/snmptrap.txt | grep -A12 "TrapServer" | sed 's/"//g' | grep -A1 "MemberId:2" | gerp "TrapServerAddress" | awk -F: '{print $1}')
 }
 #############localtime###########
 huawei_localtime(){
-curl -k -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/ > ${mydir}/localtime.txt
+curl -k -w %{http_code} -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/ > ${mydir}/localtime.txt
 sed -i 's/,/\n/g' ${mydir}/localtime.txt
 localtime=$(cat ${mydir}/localtime.txt | grep "DateTimeLocalOffset" | sed 's/"//g' | awk -F: '{print $2}')
 }
 h3c_localtime(){
-curl -k -H "Content-Type: application/json" -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/ > ${mydir}/localtime.txt
+curl -k -w %{http_code} -H "Content-Type: application/json" -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/ > ${mydir}/localtime.txt
 sed -i 's/,/\n/g' ${mydir}/localtime.txt
 localtime=$(cat ${mydir}/localtime.txt | grep "DateTimeLocalOffset" | sed 's/"//g' | awk -F: '{print $2}')
 }
 ##############bios version###############
 huawei_bios_version(){
-curl -k -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Systems/1/ > ${mydir}/bios_version.txt
+curl -k -w %{http_code} -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Systems/1/ > ${mydir}/bios_version.txt
 sed -i 's/,/\n/g' ${mydir}/bios_version.txt
 bios_version=$(cat ${mydir}/bios_version.txt | grep "BiosVersion" | sed 's/"//g' | awk -F: '{print $2}')
 }
 h3c_bios_version(){
-curl -k -H "Content-Type: application/json" -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Systems/1/ > ${mydir}/bios_version.txt
+curl -k -w %{http_code} -H "Content-Type: application/json" -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Systems/1/ > ${mydir}/bios_version.txt
 sed -i 's/,/\n/g' ${mydir}/bios_version.txt
 bios_version=$(cat ${mydir}/bios_version.txt | grep "BiosVersion" | sed 's/"//g' | awk -F: '{print $2}')
 }
 #############bmc version##############
 huawei_bmc_version(){
-curl -k -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/ > ${mydir}/bmc_version.txt
+curl -k -w %{http_code} -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/ > ${mydir}/bmc_version.txt
 sed -i 's/,/\n/g' ${mydir}/bmc_version.txt
 bmc_version=$(cat ${mydir}/bmc_version.txt | grep "FirmwareVersion" | sed 's/"//g' | awk -F: '{print $2}')
 }
 h3c_bmc_version(){
-curl -k -H "Content-Type: application/json" -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/ > ${mydir}/bmc_version.txt
+curl -k -w %{http_code} -H "Content-Type: application/json" -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/ > ${mydir}/bmc_version.txt
 sed -i 's/,/\n/g' ${mydir}/bmc_version.txt
 bmc_version=$(cat ${mydir}/bmc_version.txt | grep "FirmwareVersion" | sed 's/"//g' | awk -F: '{print $2}')
 }
 #############bmc hostname############
 huawei_bmc_hostname(){
-curl -k -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/ > ${mydir}/bmc_hostname.txt
+curl -k -w %{http_code} -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/ > ${mydir}/bmc_hostname.txt
 sed -i 's/,/\n/g' ${mydir}/bmc_hostname.txt
 bmc_hostname=$(cat ${mydir}/bmc_hostname.txt | grep "HostName" | sed 's/"//g' | awk -F: '{print $2}')
 }
 h3c_bmc_hostname(){
-curl -k -H "Content-Type: application/json" -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Systems/1/ > ${mydir}/bmc_hostname.txt
+curl -k -w %{http_code} -H "Content-Type: application/json" -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Systems/1/ > ${mydir}/bmc_hostname.txt
 sed -i 's/,/\n/g' ${mydir}/bmc_hostname.txt
 bmc_hostname=$(cat ${mydir}/bmc_hostname.txt | grep "HostName" | sed 's/"//g' | awk -F: '{print $2}')
 }
