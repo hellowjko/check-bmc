@@ -4,4 +4,4 @@
 
 先填写bmclist.csv文件再运行此脚本
 
-https://github.com/hellowjko/check-bmc/releases/download/v1.0/check-bmc-v1.0.tar.gz
+https://github.com/hellowjko/check-bmc/releases
