@@ -46,6 +46,14 @@ snmp_test(){
         fi
     fi
 }
+compare_hostname(){
+    if [ "${file_hostname,,}" == "${bmc_hostname,,}" ]; then
+        hostname_result="Passed"
+    else
+        hostname_result=${bmc_hostname}
+    fi
+}
+
 # 用户权限
 user_priv(){
     ipmitool -I lanplus -H ${ip} -U ${id2_user} -P ${id2_pass} user list > ${mydir}/userlist
@@ -189,8 +197,9 @@ user_test(){
     fi
 }
 
-id_info(){
-    id2=$(echo ${LINE}|awk -F, '{print $2}')
+var_info(){
+    file_hostname=$(echo ${LINE}|awk -F, '{print $2}')
+    id2=$(echo ${LINE}|awk -F, '{print $3}')
     if [ ! -z "${id2}" ];then
         id2_user=`echo ${id2}|awk -F/ '{print $1}'`
         id2_pass=`echo ${id2}|awk -F/ '{print $2}'`
@@ -198,8 +207,7 @@ id_info(){
         id2_user="none"
         id2_pass="none"
     fi
-
-    id3=$(echo ${LINE}|awk -F, '{print $3}')
+    id3=$(echo ${LINE}|awk -F, '{print $4}')
     if [ ! -z "${id3}" ];then
         id3_user=`echo ${id3}|awk -F/ '{print $1}'`
         id3_pass=`echo ${id3}|awk -F/ '{print $2}'`
@@ -207,8 +215,7 @@ id_info(){
         id3_user="none"
         id3_pass="none"
     fi
-
-    id4=$(echo ${LINE}|awk -F, '{print $4}')
+    id4=$(echo ${LINE}|awk -F, '{print $5}')
     if [ ! -z "${id4}" ];then
         id4_user=`echo ${id4}|awk -F/ '{print $1}'`
         id4_pass=`echo ${id4}|awk -F/ '{print $2}'`
@@ -216,8 +223,7 @@ id_info(){
         id4_user="none"
         id4_pass="none"
     fi
-
-    id5=$(echo ${LINE}|awk -F, '{print $5}')
+    id5=$(echo ${LINE}|awk -F, '{print $6}')
     if [ ! -z "${id5}" ];then
         id5_user=`echo ${id5}|awk -F/ '{print $1}'`
         id5_pass=`echo ${id5}|awk -F/ '{print $2}'`
@@ -225,8 +231,7 @@ id_info(){
         id5_user="none"
         id5_pass="none"
     fi
-
-    id6=$(echo ${LINE}|awk -F, '{print $6}')
+    id6=$(echo ${LINE}|awk -F, '{print $7}')
     if [ ! -z "${id6}" ];then
         id6_user=`echo ${id6}|awk -F/ '{print $1}'`
         id6_pass=`echo ${id6}|awk -F/ '{print $2}'`
@@ -234,8 +239,7 @@ id_info(){
         id6_user="none"
         id6_pass="none"
     fi
-
-    id7=$(echo ${LINE}|awk -F, '{print $7}')
+    id7=$(echo ${LINE}|awk -F, '{print $8}')
     if [ ! -z "${id7}" ];then
         id7_user=`echo ${id7}|awk -F/ '{print $1}'`
         id7_pass=`echo ${id7}|awk -F/ '{print $2}'`
@@ -243,8 +247,7 @@ id_info(){
         id7_user="none"
         id7_pass="none"
     fi
-
-    id8=$(echo ${LINE}|awk -F, '{print $8}')
+    id8=$(echo ${LINE}|awk -F, '{print $9}')
     if [ ! -z "${id8}" ];then
         id8_user=`echo ${id8}|awk -F/ '{print $1}'`
         id8_pass=`echo ${id8}|awk -F/ '{print $2}'`
@@ -403,16 +406,16 @@ xjkp_redfish(){
     curl -k -w %{http_code} -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1/SnmpService > ${mydir}/snmptrap.txt
     sed -i 's/,/\n/g' ${mydir}/snmptrap.txt
     snmp_str=$(cat ${mydir}/snmptrap.txt|grep "CommunityName"|sed 's/"//g'|awk -F: '{print $2}')
-    snmptrap1=$(cat ${mydir}/snmptrap.txt|grep -A32 "TrapServer"|sed 's/"//g'|grep -A5 "MemberId: 0"|grep "TrapServerAddress"|awk -F: '{print $2}'|sed 's/[[:space:]]//g')
-    snmptrap1_port=$(cat ${mydir}/snmptrap.txt|grep -A32 "TrapServer"|sed 's/"//g'|grep -A5 "MemberId: 0"|grep "TrapServerPort"|awk -F: '{print $2}'|sed -e 's/[[:space:]]//g'|sed 's/}//g')
-    snmptrap2=$(cat ${mydir}/snmptrap.txt|grep -A32 "TrapServer"|sed 's/"//g'|grep -A5 "MemberId: 1"|grep "TrapServerAddress"|awk -F: '{print $2}'|sed 's/[[:space:]]//g')
-    snmptrap1_port=$(cat ${mydir}/snmptrap.txt|grep -A32 "TrapServer"|sed 's/"//g'|grep -A5 "MemberId: 1"|grep "TrapServerPort"|awk -F: '{print $2}'|sed -e 's/[[:space:]]//g'|sed 's/}//g')
+    snmptrap1=$(cat ${mydir}/snmptrap.txt|grep -A32 "TrapServer"|sed 's/"//g'|grep -A5 "MemberId:0"|grep "TrapServerAddress"|awk -F: '{print $2}'|sed 's/[[:space:]]//g')
+    snmptrap1_port=$(cat ${mydir}/snmptrap.txt|grep -A32 "TrapServer"|sed 's/"//g'|grep -A5 "MemberId:0"|grep "TrapServerPort"|awk -F: '{print $2}'|sed -e 's/[[:space:]]//g'|sed 's/}//g')
+    snmptrap2=$(cat ${mydir}/snmptrap.txt|grep -A32 "TrapServer"|sed 's/"//g'|grep -A5 "MemberId:1"|grep "TrapServerAddress"|awk -F: '{print $2}'|sed 's/[[:space:]]//g')
+    snmptrap1_port=$(cat ${mydir}/snmptrap.txt|grep -A32 "TrapServer"|sed 's/"//g'|grep -A5 "MemberId:1"|grep "TrapServerPort"|awk -F: '{print $2}'|sed -e 's/[[:space:]]//g'|sed 's/}//g')
 
     curl -k -w %{http_code} -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Systems/1 > ${mydir}/systems.txt
     sed -i 's/,/\n/g' ${mydir}/systems.txt
     bios_version=$(cat ${mydir}/systems.txt|grep "BiosVersion"|sed 's/"//g'|awk -F: '{print $2}')
-    BootMode=$(cat ${mydir}/systems.txt|grep "BootSourceOverrideMode"|sed 's/"//g'|awk -F: '{print $2}'|sed -e 's/[[:space:]]//g')
-    BootTarget=$(cat ${mydir}/systems.txt|grep "BootSourceOverrideTarget"|sed 's/"//g'|awk -F: '{print $2}'|sed -e 's/[[:space:]]//g')
+    BootMode=$(cat ${mydir}/systems.txt|grep "BootSourceOverrideMode"|sed 's/"//g'|awk -F: '{print $2}')
+    BootTarget=$(cat ${mydir}/systems.txt|sed -e 's/"//g'|grep "BootSourceOverrideTarget:"| sed -e 's/{//g'|awk -F: '{print $3}')
 
     curl -k -w %{http_code} -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Managers/1 > ${mydir}/managers.txt
     sed -i 's/,/\n/g' ${mydir}/managers.txt
@@ -437,7 +440,7 @@ inspur_redfish(){
 
     curl -k -w %{http_code} -H "X-Auth-Token: ${token}" -X GET https://${ip}/redfish/v1/Systems/1 > ${mydir}/systems.txt
     sed -i 's/,/\n/g' ${mydir}/systems.txt
-    bios_version=$(cat ${mydir}/systems.txt|grep "BiosVersion"|sed -e 's/"//g' -e 's/\\//g' -e 's/ /-/g'|awk -F": " '{print $2}')
+    bios_version=$(cat ${mydir}/systems.txt|grep "BiosVersion"|sed -e 's/"//g' -e 's/\\//g'|awk -F": " '{print $2}'|sed 's/ /-/g')
     bmc_hostname=$(cat ${mydir}/systems.txt|grep "HostName"|sed -e 's/"//g' -e 's/[[:space:]]//g'|awk -F: '{print $2}')
     BootMode=$(cat ${mydir}/systems.txt|grep "BootSourceOverrideMode"|sed -e 's/"//g' -e 's/[[:space:]]//g'|awk -F: '{print $2}')
     BootTarget=$(cat ${mydir}/systems.txt|grep "BootSourceOverrideTarget"|sed -e 's/"//g' -e 's/[[:space:]]//g' -e 's/{//g' -e 's/}//g'|awk -F: '{print $3}')
@@ -447,7 +450,8 @@ inspur_redfish(){
     localtime=$(cat ${mydir}/managers.txt|grep "DateTimeLocalOffset"|sed -e 's/"//g' -e 's/[[:space:]]//g'|awk -F: '{print $2":"$3}')
     bmc_version=$(cat ${mydir}/managers.txt|grep "FirmwareVersion"|sed 's/"//g' |awk -F": " '{print $2}'|sed 's/ /-/g')
 }
-
+# zx(){
+#}
 
 ################start##################
 if [ ! -d "${PWD}/tmp_dir" ];then
@@ -458,25 +462,26 @@ else
     break
 fi
 
-echo "ip地址,子网掩码,网关地址,bmc主机名,制造商,型号,序列号,id2用户,测试结果,id3用户,测试结果,id4用户,测试结果,id5用户,测试结果,id6用户,测试结果,id7用户,测试结果,id8用户,测试结果,用户权限,ntp地址1,ntp地址2,时区,snmp团体字,snmp连通性,snmp告警地址1,snmp告警地址1端口号,snmp告警地址2,snmp告警地址2端口号,bmc版本,bios版本" > check_result.csv
+echo "ip地址,子网掩码,网关地址,bmc主机名,测试结果,制造商,型号,序列号,id2用户,测试结果,id3用户,测试结果,id4用户,测试结果,id5用户,测试结果,id6用户,测试结果,id7用户,测试结果,id8用户,测试结果,用户权限,ntp地址1,ntp地址2,时区,snmp团体字,snmp连通性,snmp告警地址1,snmp告警地址1端口号,snmp告警地址2,snmp告警地址2端口号,bmc版本,bios版本,当前启动模式,当前启动设备" > check_result.csv
 tr -d "\r" < bmclist.csv > ${mydir}/tmp_bmclist.csv
 for LINE in `cat ${mydir}/tmp_bmclist.csv|sed "1d"`
 do
     ip=`echo ${LINE}|awk -F, '{print $1}'`
     echo "${ip}"
-    id_info
+    var_info
 
     ping_test
     user_test
     model_info
     user_priv
     choose_manufacturer
+    compare_hostname
     snmp_test
 
     delete_info
-    echo -e "${ip},${mask:-none},${gateway:-none},${bmc_hostname:-none},${manufacturer:-none},${model:-none},${sn:-none},${id2_user}/${id2_pass},${id2_result},${id3_user}/${id3_pass},${id3_result},${id4_user}/${id4_pass},${id4_result},${id5_user}/${id5_pass},${id5_result},${id6_user}/${id6_pass},${id6_result},${id7_user}/${id7_pass},${id7_result},${id8_user}/${id8_pass},${id8_result},${priv:-none},${ntp1:-none},${ntp2:-none},${localtime:-none},${snmp_str:-none},${snmp_result},${snmptrap1:-none},${snmptrap1_port:-none},${snmptrap2:-none},${snmptrap2_port:-none},${bios_version:-none},${bmc_version:-none}" >> check_result.csv
+    echo -e "${ip},${mask:-none},${gateway:-none},${bmc_hostname:-none},${hostname_result:-none},${manufacturer:-none},${model:-none},${sn:-none},${id2_user}/${id2_pass},${id2_result},${id3_user}/${id3_pass},${id3_result},${id4_user}/${id4_pass},${id4_result},${id5_user}/${id5_pass},${id5_result},${id6_user}/${id6_pass},${id6_result},${id7_user}/${id7_pass},${id7_result},${id8_user}/${id8_pass},${id8_result},${priv:-none},${ntp1:-none},${ntp2:-none},${localtime:-none},${snmp_str:-none},${snmp_result},${snmptrap1:-none},${snmptrap1_port:-none},${snmptrap2:-none},${snmptrap2_port:-none},${bios_version:-none},${bmc_version:-none},${BootMode:-none},${BootTarget:-none}" >> check_result.csv
 done
-#rm -rf headers.txt
-#rm -rf ${PWD}/tmp_dir
+rm -rf headers.txt
+rm -rf ${PWD}/tmp_dir
 
 exit
