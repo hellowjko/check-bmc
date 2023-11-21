@@ -7,4 +7,3 @@ kunpeng:     鲲鹏（湘江鲲鹏、长江鲲鹏）
 inspur:      浪潮
 suma:        曙光
 
-https://github.com/hellowjko/check-bmc/releases
