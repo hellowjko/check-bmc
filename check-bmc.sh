@@ -66,50 +66,50 @@ user_priv(){
 
     id3_priv=$(cat ${mydir}/userlist|grep -w 3|awk -F" " '{print $6}')
     server_id3=$(cat ${mydir}/userlist|grep -w 3|awk -F" " '{print $2}')
-    if [ "${server_id3}" == "${id3_user}" ]; then
+    if [[ "${server_id3}" == "${id3_user}" && "${id3_result}" == "Passed" ]]; then
         id3_result="Passed"
     else
-        id3_result="Username:${server_id3} failed"
+        id3_result="Failed"
     fi
 
     id4_priv=$(cat ${mydir}/userlist|grep -w 4|awk -F" " '{print $6}')
     server_id4=$(cat ${mydir}/userlist|grep -w 4|awk -F" " '{print $2}')
-    if [ "${server_id4}" == "${id4_user}" ]; then
+    if [[ "${server_id4}" == "${id4_user}" && "${id4_result}" == "Passed" ]]; then
         id4_result="Passed"
     else
-        id4_result="Username:${server_id4} failed"
+        id4_result="Failed"
     fi
 
     id5_priv=$(cat ${mydir}/userlist|grep -w 5|awk -F" " '{print $6}')
     server_id5=$(cat ${mydir}/userlist|grep -w 5|awk -F" " '{print $2}')
-    if [ "${server_id5}" == "${id5_user}" ]; then
+    if [[ "${server_id5}" == "${id5_user}" && "${id5_result}" == "Passed" ]]; then
         id5_result="Passed"
     else
-        id5_result="Username:${server_id5} failed"
+        id5_result="Failed"
     fi
 
     id6_priv=$(cat ${mydir}/userlist|grep -w 6|awk -F" " '{print $6}')
     server_id6=$(cat ${mydir}/userlist|grep -w 6|awk -F" " '{print $2}')
-    if [ "${server_id6}" == "${id6_user}" ]; then
+    if [[ "${server_id6}" == "${id6_user}" && "${id6_result}" == "Passed" ]]; then
         id6_result="Passed"
     else
-        id6_result="Username:${server_id6} failed"
+        id6_result="Failed"
     fi
 
     id7_priv=$(cat ${mydir}/userlist|grep -w 7|awk -F" " '{print $6}')
     server_id7=$(cat ${mydir}/userlist|grep -w 7|awk -F" " '{print $2}')
-    if [ "${server_id7}" == "${id7_user}" ]; then
+    if [[ "${server_id7}" == "${id7_user}" && "${id7_result}" == "Passed" ]]; then
         id7_result="Passed"
     else
-        id7_result="Username:${server_id7} failed"
+        id7_result="Failed"
     fi
 
     id8_priv=$(cat ${mydir}/userlist|grep -w 8|awk -F" " '{print $6}')
     server_id8=$(cat ${mydir}/userlist|grep -w 8|awk -F" " '{print $2}')
-    if [ "${server_id8}" == "${id8_user}" ]; then
+    if [[ "${server_id8}" == "${id8_user}" && "${id8_result}" == "Passed" ]]; then
         id8_result="Passed"
     else
-        id8_result="Username:${server_id8} failed"
+        id8_result="Failed"
     fi
 
     priv=$(echo -e "id2:${id2_priv:-none}/id3:${id3_priv:-none}/id4:${id4_priv:-none}/id5:${id5_priv:-none}/id6:${id6_priv:-none}/id7:${id7_priv:-none}/id8:${id8_priv:-none}")
@@ -131,6 +131,8 @@ user_test(){
                     id2_result="Username or password is wrong,please check!"
                     continue
                 fi
+            else
+                id2_result="Password:${id2_pass} failed"
             fi
         fi
     fi
@@ -149,6 +151,8 @@ user_test(){
                 else
                     id3_result="Password:${id3_pass} failed"
                 fi
+            else
+                id3_result="Password:${id3_pass} failed"
             fi
         fi
     fi
@@ -167,6 +171,8 @@ user_test(){
                 else
                     id4_result="Password:${id4_pass} failed"
                 fi
+            else
+                id4_result="Password:${id4_pass} failed"
             fi
         fi
     fi
@@ -185,6 +191,8 @@ user_test(){
                 else
                     id5_result="Password:${id5_pass} failed"
                 fi
+            else
+                id5_result="Password:${id5_pass} failed"
             fi
         fi
     fi
@@ -203,6 +211,8 @@ user_test(){
                 else
                     id6_result="Password:${id6_pass} failed"
                 fi
+            else
+                id6_result="Password:${id6_pass} failed"
             fi
         fi
     fi
@@ -221,6 +231,8 @@ user_test(){
                 else
                     id7_result="Password:${id7_pass} failed"
                 fi
+            else
+                id7_result="Password:${id7_pass} failed"
             fi
         fi
     fi
@@ -239,6 +251,8 @@ user_test(){
                 else
                     id8_result="Password:${id8_pass} failed"
                 fi
+            else
+                id8_result="Password:${id8_pass} failed"
             fi
         fi
     fi
